@@ -4,17 +4,48 @@ import { ref } from 'vue';
 const props = defineProps(["post"]);
 const emits = defineEmits(['clicked']);
 
-const liked = ref(false); // Track if the post is liked
+const liked = ref(false);
 
-const likeImage = () => {
-    emits('clicked', props.post);
-    if (liked.value) {
-        props.post.likes--; // Subtract 1 if already liked
-    } else {
-        props.post.likes++; // Add 1 if not liked
-    }
-    liked.value = !liked.value; // Toggle the liked state
-}
+
+const likeImage = async () => {
+    emits('clicked', props.post);{
+        if (liked.value) {
+            props.post.likes--;
+        } else {
+            props.post.likes++;
+            
+        }
+        liked.value = !liked.value;
+    } 
+    
+    // console.log(props.post.likes);
+    fetchLikes();
+  }
+
+  function fetchLikes (){
+    let options = {
+    method: "PUT",
+    body: JSON.stringify({
+      likes: props.post.likes,
+    }),
+    headers: {
+      Accept: "application/json",
+      "Content-Type": "application/json",
+    },
+  };
+
+  //PUT -> udate an item in the database
+  fetch(`https://66ccd18b8ca9aa6c8cc8cbc0.mockapi.io/post/${props.post.id}`, options)
+    .then((response) => {
+      return response.json();
+    })
+    .then((data) => {
+     
+       console.log(data)
+    });
+    
+
+  }
 </script>
 
 <template>
